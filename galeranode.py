@@ -23,7 +23,11 @@ class GaleraNode:
     def get_status(self):
         result = self.query_node("SHOW STATUS LIKE 'wsrep_local_state_comment';")
         return result[1]
-
+    
+    def get_version(self):
+        result = self.query_node("SELECT @@version;")
+        return result[0]
+    
     def get_hostname(self):
         return self.host
     

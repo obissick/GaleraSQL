@@ -48,13 +48,21 @@ def run():
                 statuses[i].append(gnodes[i].get_hostname())
                 statuses[i].append(gnodes[i].get_status())
             statuses.sort()
-            print(tabulate(statuses, headers=[
-                  "Host", "Status"], tablefmt="grid"))
+            print_out(statuses, ["Host", "Status"])
+        
+        elif args.query.lower() == "show galera version":
+            for i in range(len(gnodes)):
+                statuses.append([])
+                statuses[i].append(gnodes[i].get_hostname())
+                statuses[i].append(gnodes[i].get_version())
+            statuses.sort()
+            print_out(statuses, ["Host", "DB Version"])
         else:
             logger.error(
                 'This Query should not be ran on all nodes at the same time.')
 
-
+def print_out(out, headers):
+    print(tabulate(out, headers, tablefmt="grid"))
 
 if __name__ == '__main__':
     run()

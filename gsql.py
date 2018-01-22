@@ -50,7 +50,8 @@ def run():
                     statuses[i].append(node_status[ii])   
             statuses.sort()
             print_out(statuses, ["Host", "Status", "Send Q [Now/Avg]",
-                                 "Receive Q [Now/Avg]", "Flow Ctrl Sent", "Flow Ctrl Recieved", "Flow Ctrl Paused", "Last Committed"])
+                                 "Receive Q [Now/Avg]", "Flow Ctrl Sent", 
+                                 "Flow Ctrl Recieved", "Flow Ctrl Paused", "Last Committed"])
         
         elif args.query.lower() == "show galera version":
             for i in range(len(gnodes)):

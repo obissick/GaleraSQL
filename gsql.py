@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import subprocess
 import sys
 import argparse
@@ -60,7 +61,7 @@ def run():
             statuses.sort()
             print_out(statuses, ["Host", "Galera Version"])
 
-        elif args.query.lower() == "show galera flow":
+        elif args.query.lower() == "show galera performance":
             for i in range(len(gnodes)):
                 statuses.append([])
                 statuses[i].append(gnodes[i].get_hostname())

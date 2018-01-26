@@ -6,7 +6,7 @@ Run server variable changes simultaneously on all nodes in cluster.
 * python-pip
 * argparse (install with pip)
 * tabulate (install with pip)
-* mysql.connector (install with pip)
+* mysql-connector=2.1.6 (install with pip)
 
 __Usage:__ GaleraSQL Example
 

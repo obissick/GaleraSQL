@@ -8,6 +8,10 @@ from threading import Thread
 import mysql.connector
 from mysql.connector import Error
 
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s (%(threadName)-2s) %(message)s',)
+logger = logging.getLogger(__name__)
+
 class GaleraNode:
     host = "" 
     port = ""
@@ -86,13 +90,26 @@ class GaleraNode:
             Thread(target=self.set_freceived),
             Thread(target=self.set_fpaused),
             Thread(target=self.set_committed)
-        ] 
+        ]
+
+        logger.info('Getting status of node: '+self.get_hostname())
 
         for thread in threads:
             thread.start()
 
         for thread in threads:
             thread.join()
+
+        if self.state[1] != "Synced":
+            self.state = self.color_string(self.state,"\u001b[31m")
+        
+        else:
+            self.state = self.color_string(self.state,"\u001b[32m")
+
+        if float(self.paused[1]) >= 0.02:
+            self.paused = self.color_string(self.paused,"\u001b[31m")
+        else:
+            self.paused = self.color_string(self.paused,"\u001b[32m")
 
         result = [self.state[1], self.s_queue[1] + "/" + self.s_queue_avg[1],
                   self.r_queue[1] + "/" + self.r_queue_avg[1], self.sent[1],
@@ -108,6 +125,13 @@ class GaleraNode:
     def get_hostname(self):
         """Get the hostname or IP if the server."""
         return self.host
+
+    def color_string(self, param, color):
+        """Color output based on result."""
+        param = list(param)
+        param[1] = color+param[1]+"\u001b[0m"
+        param = tuple(param)
+        return param
 
     def query_node(self, query):
         """Run a query on the node and return result."""

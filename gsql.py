@@ -37,15 +37,17 @@ def run():
     for i in range(len(nodes)):    
         gnodes.append(GaleraNode(nodes[i], args.port, args.user, args.passwd))
 
+    commands = args.query.split(" ")
+
     if args.query.lower() == "false":
         print("No query was entered.")
     else:
-        if args.query.lower().startswith('set'):
+        if commands[0].lower() == "set":
             logger.info('Checking if query is compatible.')
             for node in gnodes:
                 logger.info('Running query on node %s', node.host)
                 node.query_node(args.query)            
-        elif args.query.lower() == "show galera status":
+        elif commands[0].lower() == "show" and commands[1].lower() == "galera" and commands[2].lower() == "status":
             for i in range(len(gnodes)):
                 statuses.append([])
                 node_status = gnodes[i].get_status()
@@ -57,7 +59,7 @@ def run():
                                  "Receive Q [Now/Avg]", "Flow Ctrl Sent", 
                                  "Flow Ctrl Recieved", "Flow Ctrl Paused", "Last Committed"])
         
-        elif args.query.lower() == "show galera version":
+        elif commands[0].lower() == "show" and commands[1].lower() == "galera" and commands[2].lower() == "version":
             for i in range(len(gnodes)):
                 statuses.append([])
                 statuses[i].append(gnodes[i].get_hostname())
@@ -68,8 +70,8 @@ def run():
         elif args.query.lower() == "show galera status":
             for i in range(len(gnodes)):
                 statuses.append([])
-                statuses[i].append(gnodes[i].get_hostname())
-                statuses[i].append(gnodes[i].get_flow())
+                #statuses[i].append(gnodes[i].get_hostname())
+                #statuses[i].append(gnodes[i].get_flow())
             statuses.sort()
             print_out(statuses, ["Host", "Sent, Received, Paused"])
         

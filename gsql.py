@@ -66,21 +66,18 @@ def run():
                 statuses[i].append(gnodes[i].get_version())
             statuses.sort()
             print_out(statuses, ["Host", "Galera Version"])
-
-        elif args.query.lower() == "show galera status":
-            for i in range(len(gnodes)):
-                statuses.append([])
-                #statuses[i].append(gnodes[i].get_hostname())
-                #statuses[i].append(gnodes[i].get_flow())
-            statuses.sort()
-            print_out(statuses, ["Host", "Sent, Received, Paused"])
         
-        elif args.query.lower().startswith("ssh"):
-            ssh(gnodes[0].get_hostname(), args.sshu, args.sshp, args.query.lower())
-
+        elif commands[0].lower() == "restart" and commands[1].lower() == "galera" and commands[2].lower() == "nodes":
+            for i in range(len(gnodes)):
+                ssh(gnodes[i].get_hostname(), args.sshu, args.sshp, "service mysql restart")
+        
+        elif commands[0].lower() == "update" and commands[1].lower() == "galera" and commands[2].lower() == "nodes":
+            for i in range(len(gnodes)):
+                logger.info("Updating: " + gnodes[i].get_hostname())
+                ssh(gnodes[i].get_hostname(), args.sshu, args.sshp, "yum update -y")
         else:
             logger.error(
-                'This Query should not be ran on all nodes at the same time.')
+                'Invalid commmand.')
 
 def print_out(out, headers):
     print(tabulate(out, headers, tablefmt="grid"))
@@ -91,7 +88,7 @@ def ssh(node, user, password, command):
     client.connect(node, username=user, password=password)
     stdin, stdout, stderr = client.exec_command(command)
     for line in stdout:
-        print('... ' + line.strip('\n'))
+        logger.info(line.strip('\n'))
     client.close()
 
 if __name__ == '__main__':

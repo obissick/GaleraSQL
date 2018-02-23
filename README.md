@@ -10,6 +10,7 @@ Run server variable changes simultaneously on all nodes in cluster.
 * mysql-connector=2.1.6 (install with pip)
 
 __Commands:__ Avaliable Commands
+
     show galera (status | version) - Show status of each node in the cluster.
     restart galera nodes - restart mysql process on all nodes in rolling fashion.
     update galera nodes - update database software on all nodes in rolling fashion.

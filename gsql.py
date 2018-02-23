@@ -3,6 +3,8 @@ import subprocess
 import sys
 import argparse
 import logging
+import base64
+import paramiko
 from threading import Thread
 from tabulate import tabulate
 from galeranode import GaleraNode
@@ -18,6 +20,8 @@ def run():
     parser.add_argument("-P", dest='port', help="The port of DB server.")
     parser.add_argument("-u", dest='user', help="DB username.")
     parser.add_argument("-p", dest='passwd', help="DB password.")
+    parser.add_argument("-ussh", dest='sshu', help="User to connect to node via ssh.")
+    parser.add_argument("-pssh", dest='sshp', help="User to connect to node via ssh.")
     parser.add_argument("-q", dest='query', help="Query to run on all nodes.", default="false")
 
     args = parser.parse_args()
@@ -61,19 +65,32 @@ def run():
             statuses.sort()
             print_out(statuses, ["Host", "Galera Version"])
 
-        elif args.query.lower() == "show galera performance":
+        elif args.query.lower() == "show galera status":
             for i in range(len(gnodes)):
                 statuses.append([])
                 statuses[i].append(gnodes[i].get_hostname())
                 statuses[i].append(gnodes[i].get_flow())
             statuses.sort()
             print_out(statuses, ["Host", "Sent, Received, Paused"])
+        
+        elif args.query.lower().startswith("ssh"):
+            ssh(gnodes[0].get_hostname(), args.sshu, args.sshp, args.query.lower())
+
         else:
             logger.error(
                 'This Query should not be ran on all nodes at the same time.')
 
 def print_out(out, headers):
     print(tabulate(out, headers, tablefmt="grid"))
+
+def ssh(node, user, password, command):
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(node, username=user, password=password)
+    stdin, stdout, stderr = client.exec_command(command)
+    for line in stdout:
+        print('... ' + line.strip('\n'))
+    client.close()
 
 if __name__ == '__main__':
     run()
